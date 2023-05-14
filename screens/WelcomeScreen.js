@@ -22,14 +22,22 @@ function WelcomeScreen() {
   // }, [token, id]);
 
   return (
-    <View style={styles.rootContainer}>
-      <Text style={styles.title}>Welcome!</Text>
-      <Text>You authenticated successfully!</Text>
-      {/* <Text>{user}</Text> */}
-      <Text>{user.username}</Text>
-      {/* <Text>{id}</Text>
+    <>
+      {user ? (
+        <View style={styles.rootContainer}>
+          <Text style={styles.title}>Welcome!</Text>
+          <Text>You authenticated successfully!</Text>
+          {/* <Text>{user}</Text> */}
+          <Text>{user.username}</Text>
+          {/* <Text>{id}</Text>
       <Text>{token}</Text> */}
-    </View>
+        </View>
+      ) : (
+        <View>
+          <Text>Unauthorize!</Text>
+        </View>
+      )}
+    </>
   );
 }
 

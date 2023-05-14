@@ -12,6 +12,11 @@ import AuthContentProvider, { AuthContext } from "./store/auth-context";
 import { useContext, useEffect, useState } from "react";
 import IconButton from "./components/ui/IconButton";
 
+// Sidebar
+import * as React from "react";
+import { Button, View } from "react-native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+
 const Stack = createNativeStackNavigator();
 
 function AuthStack() {
@@ -102,12 +107,28 @@ function Root() {
   return <Navigation />;
 }
 
+const Drawer = createDrawerNavigator();
+
 export default function App() {
   return (
     <>
       {/* <StatusBar style="light" /> */}
-      <AuthContentProvider>
+      {/* <AuthContentProvider>
         <Root />
+      </AuthContentProvider> */}
+      <AuthContentProvider>
+        <NavigationContainer>
+          <Drawer.Navigator useLegacyImplementation initialRouteName="Login">
+            <Drawer.Screen name="Login" component={LoginScreen} />
+            <Drawer.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{
+                drawerItemStyle: { height: 0 },
+              }}
+            />
+          </Drawer.Navigator>
+        </NavigationContainer>
       </AuthContentProvider>
     </>
   );

@@ -31,7 +31,7 @@ function LoginScreen() {
           // token.data.details.email
         );
         setIsAuthenticating(false);
-        navigation.replace("Welcome");
+        navigation.navigate("Welcome");
       } catch (error) {
         console.log(error);
       }
