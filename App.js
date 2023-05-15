@@ -11,8 +11,8 @@ import ProfilUser from "./screens/ProfilUser/ProfilUser";
 import UbahProfilUser from "./screens/ProfilUser/UbahProfilUser";
 import TampilIzinInstruktur from "./screens/Master/IzinInstruktur/TampilIzinInstruktur";
 import TambahIzinInstruktur from "./screens/Master/IzinInstruktur/TambahIzinInstruktur";
-import TampilBookingKelas from "./screens/Master/IzinInstruktur/TampilBookingKelas";
-import TambahBookingKelas from "./screens/Master/IzinInstruktur/TambahBookingKelas";
+import TampilBookingKelas from "./screens/Master/BookingKelas/TampilBookingKelas";
+import TambahBookingKelas from "./screens/Master/BookingKelas/TambahBookingKelas";
 import AuthContentProvider, { AuthContext } from "./store/auth-context";
 
 // Sidebar
