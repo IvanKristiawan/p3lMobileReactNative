@@ -9,6 +9,10 @@ import SignupScreen from "./screens/SignupScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import ProfilUser from "./screens/ProfilUser/ProfilUser";
 import UbahProfilUser from "./screens/ProfilUser/UbahProfilUser";
+import TampilIzinInstruktur from "./screens/Master/IzinInstruktur/TampilIzinInstruktur";
+import TambahIzinInstruktur from "./screens/Master/IzinInstruktur/TambahIzinInstruktur";
+import TampilBookingKelas from "./screens/Master/IzinInstruktur/TampilBookingKelas";
+import TambahBookingKelas from "./screens/Master/IzinInstruktur/TambahBookingKelas";
 import AuthContentProvider, { AuthContext } from "./store/auth-context";
 
 // Sidebar
@@ -37,6 +41,28 @@ export default function App() {
             <Drawer.Screen
               name="UbahProfilUser"
               component={UbahProfilUser}
+              options={{
+                drawerItemStyle: { height: 0 },
+              }}
+            />
+            <Drawer.Screen
+              name="Izin Instruktur"
+              component={TampilIzinInstruktur}
+            />
+            <Drawer.Screen
+              name="TambahIzinInstruktur"
+              component={TambahIzinInstruktur}
+              options={{
+                drawerItemStyle: { height: 0 },
+              }}
+            />
+            <Drawer.Screen
+              name="Booking Kelas"
+              component={TampilBookingKelas}
+            />
+            <Drawer.Screen
+              name="TambahBookingKelas"
+              component={TambahBookingKelas}
               options={{
                 drawerItemStyle: { height: 0 },
               }}
