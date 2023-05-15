@@ -14,22 +14,14 @@ function LoginScreen() {
   const authCtx = useContext(AuthContext);
 
   async function loginHandler({ username, password }) {
-  // async function loginHandler({ email, password }) {
     setIsAuthenticating(true);
     try {
       try {
         const token = await axios.post(`${tempUrl}/auth/login`, {
           username: username,
-          // email: email,
           password: password,
         });
-        authCtx.authenticate(
-          token.data.details
-          // token.data.details.token,
-          // token.data.details._id,
-          // token.data.details.username,
-          // token.data.details.email
-        );
+        authCtx.authenticate(token.data.details);
         setIsAuthenticating(false);
         navigation.navigate("Welcome");
       } catch (error) {

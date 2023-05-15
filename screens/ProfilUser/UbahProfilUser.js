@@ -1,16 +1,69 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import Input from "../../components/Auth/Input";
 import { AuthContext, tempUrl } from "../../store/auth-context";
 import { Colors } from "../../constants/styles";
 
-function ProfilUser() {
+function UbahProfilUser() {
+  const [username, setUsername] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [telepon, setTelepon] = useState("");
+  const [tanggalLahir, setTanggalLahir] = useState("");
+  const [tipeUser, setTipeUser] = useState("");
+  const [password, setPassword] = useState("");
   const navigation = useNavigation();
   const authCtx = useContext(AuthContext);
   const user = authCtx.user;
+
+  useEffect(() => {
+    getUserById();
+  }, []);
+
+  const getUserById = async () => {
+    setLoading(true);
+    const response = await axios.post(`${tempUrl}/findUser/${user.id}`, {
+      _id: user.id,
+      token: user.token,
+    });
+    setUsername(response.data.username);
+    setAlamat(response.data.alamat);
+    setTelepon(response.data.telepon);
+    setTanggalLahir(response.data.tanggalLahir);
+    setTipeUser(response.data.tipeUser);
+    setPassword(response.data.tanggalLahir);
+    setLoading(false);
+  };
+
+  const updateUser = async (e) => {
+    e.preventDefault();
+    if (password.length === 0) {
+      setPassword(user.password);
+    }
+    try {
+      setLoading(true);
+      await axios.post(`${tempUrl}/users/${user.id}`, {
+        password,
+        _id: user.id,
+        token: user.token,
+      });
+      setLoading(false);
+      logoutButtonHandler();
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  function updateInputValueHandler(inputType, enteredValue) {
+    switch (inputType) {
+      case "password":
+        setEnteredPassword(enteredValue);
+        break;
+    }
+  }
 
   return (
     <View style={styles.authContent}>
@@ -26,6 +79,11 @@ function ProfilUser() {
               editable={false}
             />
             <Input label="Tipe" value={user.tipeUser} editable={false} />
+            <TextInput
+              label="Password"
+              onSelectionChange={(e) => setPassword(e.nativeEvent.selection)}
+              value={password}
+            />
             {user.tipeUser === "MEMBER" && (
               <>
                 <Input label="Deposit" value={user.deposit} editable={false} />
@@ -37,7 +95,7 @@ function ProfilUser() {
               </>
             )}
             <Button
-              onPress={() => navigation.navigate("UbahProfilUser")}
+              onPress={() => navigation.navigate("Notifications")}
               title="Ubah"
             />
           </View>
@@ -51,7 +109,7 @@ function ProfilUser() {
   );
 }
 
-export default ProfilUser;
+export default UbahProfilUser;
 
 const styles = StyleSheet.create({
   authContent: {
