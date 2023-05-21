@@ -11,7 +11,7 @@ import {
   usePagination,
   ButtonModifier
 } from "../../../components";
-import { Container, Form, Row, Col } from "react-bootstrap";
+import { Container, Form, Row, Col } from "react-native-bootstrap";
 import { Box, Pagination, Button } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 

@@ -17,6 +17,12 @@ function ProfilUser() {
       {user ? (
         <View style={styles.form}>
           <View>
+            {user.tipeUser !== "MEMBER" && (
+              <Button
+                onPress={() => navigation.navigate("UbahProfilUser")}
+                title="Ubah Password"
+              />
+            )}
             <Input label="Username" value={user.username} editable={false} />
             <Input label="Alamat" value={user.alamat} editable={false} />
             <Input label="Telepon" value={user.telepon} editable={false} />
@@ -36,10 +42,6 @@ function ProfilUser() {
                 />
               </>
             )}
-            <Button
-              onPress={() => navigation.navigate("UbahProfilUser")}
-              title="Ubah"
-            />
           </View>
         </View>
       ) : (

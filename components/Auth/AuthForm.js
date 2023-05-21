@@ -29,6 +29,7 @@ function AuthForm({ isLogin, onSubmit }) {
   return (
     <View style={styles.form}>
       <View>
+        <Text>GOFIT</Text>
         <Input
           label="Username"
           onUpdateValue={updateInputValueHandler.bind(this, "username")}

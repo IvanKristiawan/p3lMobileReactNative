@@ -4,20 +4,19 @@ import axios from "axios";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { tempUrl, useStateContext } from "../../../contexts/ContextProvider";
 import { Loader } from "../../../components";
-import { Container, Card, Form, Row, Col } from "react-bootstrap";
+import { Container, Card, Form, Row, Col } from "react-native-bootstrap";
 import { Box, Alert, Button, Snackbar } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
-const TambahBookingKelas = () => {
+const TambahIzinInstruktur = () => {
   const { screenSize } = useStateContext();
   const { user } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [noBooking, setNoBooking] = useState("");
   const [userId, setUserId] = useState(user.id);
   const [jadwalInstrukturId, setJadwalInstrukturId] = useState("");
 
-  const [jadwalInstruktur, setJadwalInstruktur] = useState([]);
+  const [jadwalInstrukturs, setJadwalInstrukturs] = useState([]);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -30,62 +29,36 @@ const TambahBookingKelas = () => {
   };
 
   useEffect(() => {
-    getNextKodeBookingKelas();
-    getBookingKelasData();
+    getIzinInstrukturData();
   }, []);
 
-  const getNextKodeBookingKelas = async (kodeUnit) => {
-    const response = await axios.post(`${tempUrl}/bookingKelasNextKode`, {
-      _id: user.id,
-      token: user.token,
-    });
-    setNoBooking(response.data);
-  };
-
-  const getBookingKelasData = async (kodeUnit) => {
+  const getIzinInstrukturData = async (kodeUnit) => {
     setJadwalInstrukturId("");
-    const response = await axios.post(`${tempUrl}/jadwalInstruktursMasihAda`, {
+    const response = await axios.post(`${tempUrl}/jadwalInstrukturs`, {
       _id: user.id,
-      token: user.token,
+      token: user.token
     });
-    setJadwalInstruktur(response.data);
+    setJadwalInstrukturs(response.data);
     setJadwalInstrukturId(response.data[0].id);
   };
 
-  const saveBookingKelas = async (e) => {
+  const saveIzinInstruktur = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     const form = e.currentTarget;
     if (form.checkValidity()) {
-      const findUser = await axios.post(`${tempUrl}/findUser/${userId}`, {
-        _id: user.id,
-        token: user.token,
-      });
-      const findJadwalInstruktur = await axios.post(
-        `${tempUrl}/jadwalInstrukturs/${jadwalInstrukturId}`,
-        {
+      try {
+        setLoading(true);
+        await axios.post(`${tempUrl}/saveIzinInstruktur`, {
+          userId,
+          jadwalInstrukturId,
           _id: user.id,
-          token: user.token,
-        }
-      );
-      if (findUser.data.deposit > findJadwalInstruktur.data.harga) {
-        try {
-          setLoading(true);
-          await axios.post(`${tempUrl}/saveBookingKelas`, {
-            userId,
-            jadwalInstrukturId,
-            _id: user.id,
-            token: user.token,
-          });
-          setLoading(false);
-          navigate("/bookingKelas");
-        } catch (error) {
-          alert(error);
-        }
-      } else {
-        alert(
-          `Saldo tidak mencukupi! ${findUser.data.deposit} < ${findJadwalInstruktur.data.harga}`
-        );
+          token: user.token
+        });
+        setLoading(false);
+        navigate("/izinInstruktur");
+      } catch (error) {
+        alert(error);
       }
     } else {
       setError(true);
@@ -99,17 +72,17 @@ const TambahBookingKelas = () => {
   }
 
   const textRight = {
-    textAlign: screenSize >= 650 && "right",
+    textAlign: screenSize >= 650 && "right"
   };
 
   return (
     <Container>
-      <Input>Master</Input>
-      <Input style={{ fontWeight: 400 }}>Tambah Booking Kelas</Input>
+      <Text>Master</Text>
+      <Text style={{ fontWeight: 400 }}>Tambah Izin Instruktur</Text>
       <Card>
-        <Card.Header>Booking Kelas</Card.Header>
+        <Card.Header>Izin Instruktur</Card.Header>
         <Card.Body>
-          <Form noValidate validated={validated} onSubmit={saveBookingKelas}>
+          <Form noValidate validated={validated} onSubmit={saveIzinInstruktur}>
             <Row>
               <Col sm={6}>
                 <Form.Group
@@ -118,28 +91,7 @@ const TambahBookingKelas = () => {
                   controlId="formPlaintextPassword"
                 >
                   <Form.Label column sm="3" style={textRight}>
-                    No. Booking :
-                  </Form.Label>
-                  <Col sm="9">
-                    <Form.Control
-                      required
-                      value={noBooking}
-                      disabled
-                      readOnly
-                    />
-                  </Col>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={6}>
-                <Form.Group
-                  as={Row}
-                  className="mb-3"
-                  controlId="formPlaintextPassword"
-                >
-                  <Form.Label column sm="3" style={textRight}>
-                    Member Id :
+                    Instruktur Id :
                   </Form.Label>
                   <Col sm="9">
                     <Form.Control required value={userId} disabled readOnly />
@@ -155,7 +107,7 @@ const TambahBookingKelas = () => {
                   controlId="formPlaintextPassword"
                 >
                   <Form.Label column sm="3" style={textRight}>
-                    Jml. Member Max :
+                    Jadwal Instruktur :
                   </Form.Label>
 
                   <Col sm="9">
@@ -166,11 +118,10 @@ const TambahBookingKelas = () => {
                         setJadwalInstrukturId(e.target.value);
                       }}
                     >
-                      {jadwalInstruktur.map((jadwalGym, index) => (
+                      {jadwalInstrukturs.map((jadwalGym, index) => (
                         <option value={jadwalGym.id}>
                           {jadwalGym.namaKelas} | {jadwalGym.tanggal} |{" "}
-                          {jadwalGym.dariJam}-{jadwalGym.sampaiJam} |{" "}
-                          {jadwalGym.jumlahMemberMax - jadwalGym.jumlahMember}
+                          {jadwalGym.dariJam}-{jadwalGym.sampaiJam}
                         </option>
                       ))}
                     </Form.Select>
@@ -182,7 +133,7 @@ const TambahBookingKelas = () => {
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={() => navigate("/bookingKelas")}
+                onClick={() => navigate("/izinInstruktur")}
                 sx={{ marginRight: 2 }}
               >
                 {"< Kembali"}
@@ -209,12 +160,12 @@ const TambahBookingKelas = () => {
   );
 };
 
-export default TambahBookingKelas;
+export default TambahIzinInstruktur;
 
 const spacingTop = {
-  mt: 4,
+  mt: 4
 };
 
 const alertBox = {
-  width: "100%",
+  width: "100%"
 };

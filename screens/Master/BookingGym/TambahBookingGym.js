@@ -4,19 +4,20 @@ import axios from "axios";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { tempUrl, useStateContext } from "../../../contexts/ContextProvider";
 import { Loader } from "../../../components";
-import { Container, Card, Form, Row, Col } from "react-bootstrap";
+import { Container, Card, Form, Row, Col } from "react-native-bootstrap";
 import { Box, Alert, Button, Snackbar } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
-const TambahIzinInstruktur = () => {
+const TambahBookingGym = () => {
   const { screenSize } = useStateContext();
   const { user } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [noBooking, setNoBooking] = useState("");
   const [userId, setUserId] = useState(user.id);
-  const [jadwalInstrukturId, setJadwalInstrukturId] = useState("");
+  const [jadwalGymId, setJadwalGymId] = useState("");
 
-  const [jadwalInstrukturs, setJadwalInstrukturs] = useState([]);
+  const [jadwalGyms, setJadwalGyms] = useState([]);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -29,37 +30,48 @@ const TambahIzinInstruktur = () => {
   };
 
   useEffect(() => {
-    getIzinInstrukturData();
+    getNextKodeBookingGym();
+    getBookingGymsData();
   }, []);
 
-  const getIzinInstrukturData = async (kodeUnit) => {
-    setJadwalInstrukturId("");
-    const response = await axios.post(`${tempUrl}/jadwalInstrukturs`, {
+  const getNextKodeBookingGym = async (kodeUnit) => {
+    const response = await axios.post(`${tempUrl}/bookingGymNextKode`, {
       _id: user.id,
-      token: user.token
+      token: user.token,
     });
-    setJadwalInstrukturs(response.data);
-    setJadwalInstrukturId(response.data[0].id);
+    setNoBooking(response.data);
   };
 
-  const saveIzinInstruktur = async (e) => {
+  const getBookingGymsData = async (kodeUnit) => {
+    setJadwalGymId("");
+    const response = await axios.post(`${tempUrl}/jadwalGymsMasihAda`, {
+      _id: user.id,
+      token: user.token,
+    });
+    setJadwalGyms(response.data);
+    setJadwalGymId(response.data[0].id);
+  };
+
+  const saveBookingGym = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     const form = e.currentTarget;
     if (form.checkValidity()) {
+      setLoading(true);
       try {
         setLoading(true);
-        await axios.post(`${tempUrl}/saveIzinInstruktur`, {
+        await axios.post(`${tempUrl}/saveBookingGym`, {
           userId,
-          jadwalInstrukturId,
+          jadwalGymId,
           _id: user.id,
-          token: user.token
+          token: user.token,
         });
         setLoading(false);
-        navigate("/izinInstruktur");
+        navigate("/bookingGym");
       } catch (error) {
         alert(error);
       }
+      setLoading(false);
     } else {
       setError(true);
       setOpen(!open);
@@ -72,17 +84,18 @@ const TambahIzinInstruktur = () => {
   }
 
   const textRight = {
-    textAlign: screenSize >= 650 && "right"
+    textAlign: screenSize >= 650 && "right",
   };
 
   return (
     <Container>
-      <Text>Master</Text>
-      <Text style={{ fontWeight: 400 }}>Tambah Izin Instruktur</Text>
+      <h3>Master</h3>
+      <h5 style={{ fontWeight: 400 }}>Tambah Booking Gym</h5>
+      <hr />
       <Card>
-        <Card.Header>Izin Instruktur</Card.Header>
+        <Card.Header>Booking Gym</Card.Header>
         <Card.Body>
-          <Form noValidate validated={validated} onSubmit={saveIzinInstruktur}>
+          <Form noValidate validated={validated} onSubmit={saveBookingGym}>
             <Row>
               <Col sm={6}>
                 <Form.Group
@@ -91,7 +104,28 @@ const TambahIzinInstruktur = () => {
                   controlId="formPlaintextPassword"
                 >
                   <Form.Label column sm="3" style={textRight}>
-                    Instruktur Id :
+                    No. Booking :
+                  </Form.Label>
+                  <Col sm="9">
+                    <Form.Control
+                      required
+                      value={noBooking}
+                      disabled
+                      readOnly
+                    />
+                  </Col>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={6}>
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="formPlaintextPassword"
+                >
+                  <Form.Label column sm="3" style={textRight}>
+                    Member Id :
                   </Form.Label>
                   <Col sm="9">
                     <Form.Control required value={userId} disabled readOnly />
@@ -107,21 +141,22 @@ const TambahIzinInstruktur = () => {
                   controlId="formPlaintextPassword"
                 >
                   <Form.Label column sm="3" style={textRight}>
-                    Jadwal Instruktur :
+                    Jml. Member Max :
                   </Form.Label>
 
                   <Col sm="9">
                     <Form.Select
                       required
-                      value={jadwalInstrukturId}
+                      value={jadwalGymId}
                       onChange={(e) => {
-                        setJadwalInstrukturId(e.target.value);
+                        setJadwalGymId(e.target.value);
                       }}
                     >
-                      {jadwalInstrukturs.map((jadwalGym, index) => (
+                      {jadwalGyms.map((jadwalGym, index) => (
                         <option value={jadwalGym.id}>
-                          {jadwalGym.namaKelas} | {jadwalGym.tanggal} |{" "}
-                          {jadwalGym.dariJam}-{jadwalGym.sampaiJam}
+                          {jadwalGym.tanggal} | {jadwalGym.dariJam}-
+                          {jadwalGym.sampaiJam} |{" "}
+                          {jadwalGym.jumlahMemberMax - jadwalGym.jumlahMember}
                         </option>
                       ))}
                     </Form.Select>
@@ -133,7 +168,7 @@ const TambahIzinInstruktur = () => {
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={() => navigate("/izinInstruktur")}
+                onClick={() => navigate("/bookingGym")}
                 sx={{ marginRight: 2 }}
               >
                 {"< Kembali"}
@@ -160,12 +195,12 @@ const TambahIzinInstruktur = () => {
   );
 };
 
-export default TambahIzinInstruktur;
+export default TambahBookingGym;
 
 const spacingTop = {
-  mt: 4
+  mt: 4,
 };
 
 const alertBox = {
-  width: "100%"
+  width: "100%",
 };

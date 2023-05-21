@@ -11,7 +11,7 @@ import {
   usePagination,
   ButtonModifier,
 } from "../../../components";
-import { Container, Form, Row, Col } from "react-bootstrap";
+import { Container, Form, Row, Col } from "react-native-bootstrap";
 import { Box, Pagination, Button, ButtonGroup } from "@mui/material";
 import jsPDF from "jspdf";
 import SearchIcon from "@mui/icons-material/Search";
